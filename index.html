@@ -1,0 +1,232 @@
+<!DOCTYPE html> 
+<html>
+<head>
+    <title>mitsu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://mystickermania.com/cdn/stickers/cute/cute-blue-penguin-512x512.png"/>
+    <style>
+        body {
+            background-image: url('https://wallpaperaccess.com/full/1524373.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: white;
+            font-family: 'Dancing Script', cursive;
+            font-size: 80px;
+            font-weight: bold;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        p {
+            color: white;
+            font-family: 'Indie Flower', cursive;
+            font-size: 40px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .cat-image {
+            display: block;
+            margin: 20px auto;
+            max-width: 200px;
+            cursor: pointer;
+        }
+
+        .progress-container {
+            width: 50%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #00f;
+            border-radius: 10px;
+            transition: width 0.1s ease-in-out;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-family: 'Indie Flower', cursive;
+            font-size: 20px;
+            color: white;
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .message {
+            display: none;
+            text-align: center;
+            font-family: 'Indie Flower', cursive;
+            font-size: 40px;
+            color: white;
+            margin-top: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .reset-button {
+            display: none;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 20px;
+            font-family: 'Indie Flower', cursive;
+            background-color: #00f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .reset-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        let progress = 0;
+        let isTouching = false;
+        let isMoving = false;
+        let intervalId;
+        let lastX = 0, lastY = 0;
+        let isStarted = false; // Flag to check if the user started moving
+
+        function startFilling() {
+            if (!intervalId) {
+                intervalId = setInterval(() => {
+                    if (isMoving && progress < 100) {
+                        increaseProgress();
+                    }
+                }, 80);
+            }
+        }
+
+        function stopFilling() {
+            isMoving = false;
+            clearInterval(intervalId);
+            intervalId = null;
+        }
+
+        function increaseProgress() {
+            const progressBar = document.querySelector(".progress-bar");
+            const progressText = document.querySelector(".progress-text");
+            const catImage = document.querySelector(".cat-image");
+            const message = document.querySelector(".message");
+            const subtitle = document.querySelector("p");
+            const resetButton = document.querySelector(".reset-button");
+
+            progress += 1.25;
+            if (progress > 100) progress = 100;
+
+            progressBar.style.width = progress + "%";
+            progressText.innerText = Math.round(progress) + "%";
+
+            if (progress === 100) {
+                catImage.style.display = "none";
+                subtitle.style.display = "none";
+                message.style.display = "block";
+                resetButton.style.display = "block";
+                stopFilling();
+            }
+        }
+
+        function resetEverything() {
+            const progressBar = document.querySelector(".progress-bar");
+            const progressText = document.querySelector(".progress-text");
+            const catImage = document.querySelector(".cat-image");
+            const message = document.querySelector(".message");
+            const subtitle = document.querySelector("p");
+            const resetButton = document.querySelector(".reset-button");
+
+            progress = 0;
+            progressBar.style.width = "0%";
+            progressText.innerText = "0%";
+            catImage.style.display = "block";
+            message.style.display = "none";
+            subtitle.style.display = "block";
+            resetButton.style.display = "none";
+            isStarted = false; // Reset the flag to allow starting again
+        }
+
+        function handleMouseMove(e) {
+            if (e.target.classList.contains("cat-image") && isStarted) {
+                if (!isMoving) {
+                    isMoving = true;
+                    startFilling();
+                }
+            }
+        }
+
+        function handleMouseUp() {
+            stopFilling();
+        }
+
+        function handleMouseLeave() {
+            stopFilling();
+        }
+
+        document.addEventListener("mousedown", (e) => {
+            if (e.target.classList.contains("cat-image") && !isStarted) {
+                isStarted = true; // Mark the start of the interaction
+                isMoving = true;
+                startFilling();
+            }
+        });
+
+        document.addEventListener("mouseup", handleMouseUp);
+        document.addEventListener("mouseleave", handleMouseLeave);
+        document.addEventListener("mousemove", handleMouseMove);
+
+        document.addEventListener("touchstart", (e) => {
+            if (e.target.classList.contains("cat-image") && !isStarted) {
+                isStarted = true; // Mark the start of the interaction
+                isMoving = true;
+                startFilling();
+            }
+        });
+        document.addEventListener("touchend", handleMouseUp);
+        document.addEventListener("touchcancel", handleMouseUp);
+        document.addEventListener("touchmove", (e) => {
+            if (e.target.classList.contains("cat-image") && isStarted) {
+                isMoving = true;
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>The Road to the Blue Heart...</h1>
+    <p>If you want to cross, pat the cat...</p>
+
+    <img src="https://static.vecteezy.com/system/resources/previews/014/426/023/non_2x/cat-cartoon-character-crop-out-png.png" 
+         alt="Cute Cat" 
+         class="cat-image" 
+         draggable="false">
+
+    <div class="progress-container">
+        <div class="progress-bar"></div>
+        <span class="progress-text">0%</span>
+    </div>
+
+    <div class="message">
+        There is no road. I tricked you into patting me.
+    </div>
+
+    <button class="reset-button" onclick="resetEverything()">Reset</button>
+</body>
+</html>
